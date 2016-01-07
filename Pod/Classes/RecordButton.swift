@@ -42,7 +42,6 @@
                 self.alpha = 0
             }
         }
-        
     }
     
     private var circleLayer: CALayer!
@@ -74,7 +73,6 @@
         self.backgroundColor = UIColor.clearColor()
         let layer = self.layer
         circleLayer = CALayer()
-        circleLayer.backgroundColor = buttonColor.CGColor
         
         let size: CGFloat = self.frame.size.width / 1.5
         circleLayer.bounds = CGRectMake(0, 0, size, size)
@@ -83,22 +81,12 @@
         circleLayer.cornerRadius = size / 2
         layer.insertSublayer(circleLayer, atIndex: 0)
         
-        circleBorder = CALayer()
-        circleBorder.backgroundColor = UIColor.clearColor().CGColor
-        circleBorder.borderWidth = 1
-        circleBorder.borderColor = buttonColor.CGColor
-        circleBorder.bounds = CGRectMake(0, 0, self.bounds.size.width - 1.5, self.bounds.size.height - 1.5)
-        circleBorder.anchorPoint = CGPointMake(0.5, 0.5)
-        circleBorder.position = CGPointMake(CGRectGetMidX(self.bounds),CGRectGetMidY(self.bounds))
-        circleBorder.cornerRadius = self.frame.size.width / 2
-        layer.insertSublayer(circleBorder, atIndex: 0)
-        
         let startAngle: CGFloat = CGFloat(M_PI) + CGFloat(M_PI_2)
         let endAngle: CGFloat = CGFloat(M_PI) * 3 + CGFloat(M_PI_2)
         let centerPoint: CGPoint = CGPointMake(self.frame.size.width / 2, self.frame.size.height / 2)
         gradientMaskLayer = self.gradientMask()
         progressLayer = CAShapeLayer()
-        progressLayer.path = UIBezierPath(arcCenter: centerPoint, radius: self.frame.size.width / 2 - 2, startAngle: startAngle, endAngle: endAngle, clockwise: true).CGPath
+        progressLayer.path = UIBezierPath(arcCenter: centerPoint, radius: self.frame.size.width / 3 - 2, startAngle: startAngle, endAngle: endAngle, clockwise: true).CGPath
         progressLayer.backgroundColor = UIColor.clearColor().CGColor
         progressLayer.fillColor = nil
         progressLayer.strokeColor = UIColor.blackColor().CGColor
@@ -121,36 +109,11 @@
         scale.fillMode = kCAFillModeForwards
         scale.removedOnCompletion = false
         
-        let color = CABasicAnimation(keyPath: "backgroundColor")
-        color.duration = duration
-        color.fillMode = kCAFillModeForwards
-        color.removedOnCompletion = false
-        color.toValue = recording ? progressColor.CGColor : buttonColor.CGColor
-        
         let circleAnimations = CAAnimationGroup()
         circleAnimations.removedOnCompletion = false
         circleAnimations.fillMode = kCAFillModeForwards
         circleAnimations.duration = duration
-        circleAnimations.animations = [scale, color]
-        
-        let borderColor: CABasicAnimation = CABasicAnimation(keyPath: "borderColor")
-        borderColor.duration = duration
-        borderColor.fillMode = kCAFillModeForwards
-        borderColor.removedOnCompletion = false
-        borderColor.toValue = recording ? UIColor(red: 0.83, green: 0.86, blue: 0.89, alpha: 1).CGColor : buttonColor
-        
-        let borderScale = CABasicAnimation(keyPath: "transform.scale")
-        borderScale.fromValue = recording ? 1.0 : 0.88
-        borderScale.toValue = recording ? 0.88 : 1.0
-        borderScale.duration = duration
-        borderScale.fillMode = kCAFillModeForwards
-        borderScale.removedOnCompletion = false
-        
-        let borderAnimations = CAAnimationGroup()
-        borderAnimations.removedOnCompletion = false
-        borderAnimations.fillMode = kCAFillModeForwards
-        borderAnimations.duration = duration
-        borderAnimations.animations = [borderColor, borderScale]
+        circleAnimations.animations = [scale]
         
         let fade = CABasicAnimation(keyPath: "opacity")
         fade.fromValue = recording ? 0.0 : 1.0
@@ -161,8 +124,6 @@
         
         circleLayer.addAnimation(circleAnimations, forKey: "circleAnimations")
         progressLayer.addAnimation(fade, forKey: "fade")
-        circleBorder.addAnimation(borderAnimations, forKey: "borderAnimations")
-        
     }
     
     private func gradientMask() -> CAGradientLayer {
@@ -178,8 +139,6 @@
     override public func layoutSubviews() {
         circleLayer.anchorPoint = CGPointMake(0.5, 0.5)
         circleLayer.position = CGPointMake(CGRectGetMidX(self.bounds),CGRectGetMidY(self.bounds))
-        circleBorder.anchorPoint = CGPointMake(0.5, 0.5)
-        circleBorder.position = CGPointMake(CGRectGetMidX(self.bounds),CGRectGetMidY(self.bounds))
         super.layoutSubviews()
     }
     
@@ -203,7 +162,6 @@
         }
     }
     
-    
     /**
     Set the relative length of the circle border to the specified progress
     
@@ -211,8 +169,5 @@
     */
     public func setProgress(newProgress: CGFloat) {
         progressLayer.strokeEnd = newProgress
-    }
-    
-    
+    }   
 }
-
